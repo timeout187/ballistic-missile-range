@@ -4,6 +4,131 @@ A six-degree-of-freedom (6DOF) rigid-body flight-dynamics simulator for
 ballistic missile / sounding-rocket-class trajectories, with a Streamlit
 GUI, an analysis module, and hand-built animated SVG output graphs.
 
+**New here? Jump to [Quick Start](#quick-start-zero-experience-needed) below
+- it walks through everything from "I have never used a terminal" to a
+running simulation, step by step.** There's also a
+[GitHub Wiki](../../wiki) with the same guide plus deeper how-tos.
+
+---
+
+## Quick Start (zero experience needed)
+
+This walks through everything needed to get the simulator running on your
+own computer, assuming you have never used a terminal before. It takes
+about 5 minutes. Every command below is something you type exactly as
+written, then press Enter.
+
+### What you need
+
+- A Windows, Mac, or Linux computer.
+- An internet connection (just for the one-time setup).
+- That's it - no coding experience required to *run* it.
+
+### Step 1: Check if Python is already installed
+
+Python is the programming language this project is written in. Most of the
+setup below happens through a **terminal** (a text window where you type
+commands instead of clicking icons).
+
+**Open a terminal:**
+- **Windows**: press the Windows key, type `PowerShell`, press Enter.
+- **Mac**: press `Cmd + Space`, type `Terminal`, press Enter.
+
+Type this and press Enter:
+
+```bash
+python --version
+```
+
+- If you see something like `Python 3.11.0`, you already have Python -
+  skip to Step 2.
+- If you see an error (`command not found`, or Windows offers to open the
+  Microsoft Store), you need to install Python first: go to
+  [python.org/downloads](https://www.python.org/downloads/), download the
+  latest version, run the installer. **On Windows, make sure to check the
+  box that says "Add Python to PATH"** during install - it's easy to miss
+  and things won't work without it. Restart your terminal after installing.
+
+### Step 2: Download this project
+
+If you have `git` installed, run:
+
+```bash
+git clone https://github.com/timeout187/ballistic-missile-range.git
+cd ballistic-missile-range
+```
+
+Don't have `git` or don't know what that means? On this repository's GitHub
+page, click the green **Code** button, then **Download ZIP**. Unzip it
+anywhere (e.g. your Desktop), then in your terminal navigate into that
+folder - for example:
+
+```bash
+cd Desktop/ballistic-missile-range
+```
+
+### Step 3: Install the project's dependencies
+
+This downloads the handful of code libraries the simulator relies on
+(numerical math, the web GUI framework, the charting library). Run:
+
+```bash
+pip install -r requirements.txt
+```
+
+This can take a minute or two the first time. If `pip` isn't recognized,
+try `pip3` or `python -m pip install -r requirements.txt` instead.
+
+### Step 4: Launch the simulator
+
+```bash
+streamlit run app.py
+```
+
+A browser tab should open automatically at `http://localhost:8501` showing
+the app. If it doesn't open by itself, copy that address into your browser
+manually. **Leave the terminal window open** - closing it stops the app.
+
+### Step 5: Run your first simulation
+
+1. On the left sidebar, leave the default **Preset** ("Russia - Scud-B")
+   selected - it's a ready-to-go example.
+2. Scroll down and click the red **Run Simulation** button.
+3. Wait a few seconds - the physics engine is integrating the full flight,
+   launch to impact.
+4. You'll see the flight results appear: apogee, downrange distance, max
+   speed, and more, followed by tabs. Click **Animated Flight Report
+   (SVG)**, then press the **Play** button to watch the simulated flight
+   animate in real time, with live altitude/speed/stress charts scrolling
+   alongside it.
+
+That's it - you're running a real 6DOF aerospace simulation. From here,
+try a different preset in the sidebar, or expand **Stages** / **Payload /
+re-entry body** to change the vehicle's mass, thrust, or aerodynamics, and
+click **Run Simulation** again to see how the flight changes.
+
+### Stopping the app
+
+Go back to the terminal window and press `Ctrl + C`. Closing the terminal
+window also stops it.
+
+### Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| `python: command not found` | Python isn't installed, or wasn't added to PATH - see Step 1. On some systems the command is `python3` instead of `python`. |
+| `pip: command not found` | Try `pip3` or `python -m pip install -r requirements.txt`. |
+| `streamlit: command not found` | The install in Step 3 didn't finish or failed - re-run `pip install -r requirements.txt` and check for red error text above. |
+| Browser tab doesn't open | Manually open `http://localhost:8501` in any browser while the terminal is still running. |
+| "This vehicle cannot lift off" warning | The thrust you configured is less than the vehicle's weight - increase thrust or reduce mass in the sidebar's Stages panel, or just pick a different preset. |
+| Port already in use | Another program is using port 8501. Run `streamlit run app.py --server.port 8502` instead, then open `http://localhost:8502`. |
+| Still stuck | Open an [issue on GitHub](../../issues) with what you typed and what error you saw. |
+
+For everything beyond this - what each tab means, how the physics works,
+how to add your own vehicle - see the [Wiki](../../wiki).
+
+---
+
 This project began as a fork of a 2005, Python 2/wxPython, **planar**
 (range-and-altitude-only, no rotation) ICBM trajectory tool written by Josh
 Levinger for GlobalSecurity.org, based on Dr. David Wright's (MIT) 1992
