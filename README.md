@@ -237,6 +237,13 @@ Opens a browser tab with:
 - **Raw Data / Export** tab - the full timestepped dataframe, downloadable
   as CSV or a metrics summary as JSON.
 
+### Python version
+
+Targets **Python 3.14** (the current latest stable release, security-
+supported through October 2030) - pinned in the Docker image, CI, and
+`runtime.txt` (read by Streamlit Community Cloud). Should also run on any
+3.10+ interpreter if you're installing manually.
+
 ## Physics & modeling notes / scope
 
 - **Atmosphere**: 1976 U.S. Standard Atmosphere, piecewise through 86 km,
