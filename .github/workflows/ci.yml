@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Byte-compile every module
+        run: python -m py_compile sixdof/*.py analysis/*.py app.py
+
+      - name: Physics smoke test (Scud-B gravity-turn flight)
+        run: |
+          python -c "
+          from sixdof.presets import PRESETS
+          from sixdof.guidance import GuidanceProgram
+          from sixdof.simulation import Simulation
+          from analysis.metrics import compute_metrics
+
+          v = PRESETS['Russia - Scud-B']
+          g = GuidanceProgram(launch_azimuth_deg=90, trajectory_type='gravity_turn')
+          sim = Simulation(v, g, launch_lat_deg=35.0, launch_lon_deg=45.0, t_max=1200)
+          res = sim.run()
+          m = compute_metrics(res, v)
+
+          print(f'apogee={m.apogee_km:.1f}km range={m.total_range_km:.1f}km '
+                f'max_mach={m.max_mach:.2f} max_g={m.max_accel_g:.1f} '
+                f'impacted={res.impacted}')
+
+          # Sanity bounds - if a physics change breaks the model, one of
+          # these should trip. Not exact values (the model is deterministic
+          # but these bounds intentionally have headroom for tuning).
+          assert res.impacted, 'flight did not reach impact within the time limit'
+          assert 50 < m.apogee_km < 500, f'apogee out of expected range: {m.apogee_km}'
+          assert 20 < m.total_range_km < 500, f'downrange out of expected range: {m.total_range_km}'
+          assert 1 < m.max_mach < 15, f'max Mach out of expected range: {m.max_mach}'
+          assert 0 < m.max_accel_g < 200, f'max axial load out of expected range: {m.max_accel_g}'
+          print('OK: physics smoke test passed')
+          "
+
+      - name: Verify every preset can be constructed and at least attempts liftoff
+        run: |
+          python -c "
+          from sixdof.presets import PRESETS
+          for name, v in PRESETS.items():
+              assert v.stages, f'{name} has no stages'
+              s0 = v.stages[0]
+              tw = (s0.thrust_vac * (s0.isp_sea / s0.isp_vac)) / (v.total_mass() * 9.81)
+              print(f'{name}: liftoff T/W = {tw:.2f}')
+              assert tw > 1.0, f'{name} cannot lift off (T/W={tw:.2f})'
+          print('OK: all presets are flyable')
+          "
