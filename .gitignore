@@ -1,36 +1,51 @@
+# Python
+__pycache__/
 *.py[cod]
-
-# C extensions
 *.so
-
-# Packages
 *.egg
-*.egg-info
-dist
-build
-eggs
-parts
-bin
-var
-sdist
-develop-eggs
+*.egg-info/
+dist/
+build/
+eggs/
+parts/
+sdist/
+develop-eggs/
 .installed.cfg
-lib
-lib64
-__pycache__
 
-# Installer logs
-pip-log.txt
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
 
-# Unit test / coverage reports
+# Env vars / secrets - never commit these
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Test / coverage / type-checker caches
 .coverage
-.tox
+.pytest_cache/
+.tox/
+.mypy_cache/
+.ruff_cache/
 nosetests.xml
+htmlcov/
 
-# Translations
-*.mo
+# Jupyter
+.ipynb_checkpoints/
 
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
+# Editors / IDEs
+.vscode/
+.idea/
+*.swp
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Simulation output left in the repo root by ad-hoc runs
+scratch_*.json
+scratch_*.csv
+trajectory.csv
+metrics.json
