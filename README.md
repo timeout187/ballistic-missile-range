@@ -4,10 +4,17 @@ A six-degree-of-freedom (6DOF) rigid-body flight-dynamics simulator for
 ballistic missile / sounding-rocket-class trajectories, with a Streamlit
 GUI, an analysis module, and hand-built animated SVG output graphs.
 
-**New here? Jump to [Quick Start](#quick-start-zero-experience-needed) below
-- it walks through everything from "I have never used a terminal" to a
-running simulation, step by step.** There's also a
-[GitHub Wiki](../../wiki) with the same guide plus deeper how-tos.
+**[Launch the live app &rarr;](https://sixdof-missile-range.streamlit.app/)**
+- no install needed, runs in your browser via Streamlit Community Cloud.
+
+**New to running it yourself?** Jump to
+[Quick Start](#quick-start-zero-experience-needed) below - it walks
+through everything from "I have never used a terminal" to a running
+simulation, step by step. There's also a [GitHub Wiki](../../wiki) with
+the same guide plus deeper how-tos, and a static
+[flight-report demo](https://timeout187.github.io/ballistic-missile-range/)
+hosted on GitHub Pages if you just want to see it animate without running
+anything.
 
 ---
 

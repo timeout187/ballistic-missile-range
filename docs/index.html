@@ -83,6 +83,16 @@
   .repo-link:hover { color: var(--accent); border-color: var(--accent); }
   .repo-link .arrow { display: inline-block; transition: transform .15s; }
   .repo-link:hover .arrow { transform: translateX(2px); }
+  .repo-link-primary {
+    background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600;
+  }
+  .repo-link-primary:hover { color: var(--accent-ink); filter: brightness(1.08); }
+
+  .term-link {
+    font-family: var(--font-mono); font-size: 13px; color: var(--accent); text-decoration: none;
+    font-weight: 600;
+  }
+  .term-link:hover { text-decoration: underline; }
 
   /* ---- KPI strip ---- */
   .kpi-strip {
@@ -186,6 +196,9 @@
     </div>
     <div class="topbar-right">
       <span class="chip chip-good">BUILD COMPLETE</span>
+      <a class="repo-link repo-link-primary" href="https://sixdof-missile-range.streamlit.app/" target="_blank" rel="noopener">
+        Launch the live app <span class="arrow">&rarr;</span>
+      </a>
       <a class="repo-link" href="https://github.com/timeout187/ballistic-missile-range" target="_blank" rel="noopener">
         github.com/timeout187/ballistic-missile-range <span class="arrow">&rarr;</span>
       </a>
@@ -519,10 +532,12 @@
         <li>Two historical presets (Scud-B, Al-Husayn) had their sourced thrust corrected upward to a flyable thrust-to-weight ratio &mdash; documented in <code>sixdof/presets.py</code>.</li>
       </ul>
       <div class="panel-head panel-head-2"><span class="panel-eyebrow">Full interactive GUI</span></div>
-      <p class="run-copy">This page is a static replay of one saved flight - GitHub Pages can't run a Python backend. The Streamlit app runs any preset or fully custom vehicle, live, with editable stages and launch parameters. Run it locally:</p>
+      <p class="run-copy">This page is a static replay of one saved flight - GitHub Pages can't run a Python backend. The full interactive app - any preset or fully custom vehicle, live, editable stages and launch parameters - is hosted for free:</p>
+      <p class="run-copy"><a class="term-link" href="https://sixdof-missile-range.streamlit.app/" target="_blank" rel="noopener">sixdof-missile-range.streamlit.app &rarr;</a></p>
+      <p class="run-copy">Or run it on your own machine:</p>
       <pre class="term"><code>pip install -r requirements.txt
 streamlit run app.py</code></pre>
-      <p class="run-copy">Or deploy it for free with no server of your own, straight from this repo, at <a href="https://share.streamlit.io" target="_blank" rel="noopener">share.streamlit.io</a> (Streamlit Community Cloud) or <a href="https://huggingface.co/spaces" target="_blank" rel="noopener">Hugging Face Spaces</a>. See the <a href="https://github.com/timeout187/ballistic-missile-range/wiki/Quick-Start" target="_blank" rel="noopener">Quick Start wiki page</a> for a full walkthrough.</p>
+      <p class="run-copy">See the <a href="https://github.com/timeout187/ballistic-missile-range/wiki/Quick-Start" target="_blank" rel="noopener">Quick Start wiki page</a> for a full walkthrough.</p>
     </div>
   </section>
 
