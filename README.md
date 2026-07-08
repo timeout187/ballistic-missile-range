@@ -139,10 +139,14 @@ how to add your own vehicle - see the [Wiki](../../wiki).
 This project began as a fork of a 2005, Python 2/wxPython, **planar**
 (range-and-altitude-only, no rotation) ICBM trajectory tool written by Josh
 Levinger for GlobalSecurity.org, based on Dr. David Wright's (MIT) 1992
-BASIC model. That original tool is preserved for reference in
-[`legacy_2005_planar_tool/`](legacy_2005_planar_tool/). Everything below is
-new: a full 3D translational **and** rotational rigid-body simulation, a
-modern GUI, and an animated data-analysis output module.
+BASIC model, with later GUI/packaging updates by Karsten Wolf
+([@karstenw](https://github.com/karstenw)). That original tool is
+preserved for reference, with full credit, in
+[`legacy_2005_planar_tool/`](legacy_2005_planar_tool/) - including its own
+copyright notice in [`LICENSE`](LICENSE), which stays in force regardless
+of the upstream repository's archived status. Everything below is new: a
+full 3D translational **and** rotational rigid-body simulation, a modern
+GUI, and an animated data-analysis output module.
 
 ## What "6DOF" adds over the original
 
