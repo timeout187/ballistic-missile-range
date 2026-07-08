@@ -1,6 +1,14 @@
 The MIT License (MIT)
 
 Copyright (c) 2013 Josh Levinger
+Copyright (c) 2026 Hasan Ahmed
+
+The 2013 copyright covers the original planar range/altitude simulation
+this project was forked from (preserved in legacy_2005_planar_tool/). The
+2026 copyright covers the six-degrees-of-freedom rigid-body simulator,
+GUI, analysis module, and animated SVG report added since (sixdof/,
+analysis/, app.py, and related project files). Both are licensed under
+the same MIT terms below.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
