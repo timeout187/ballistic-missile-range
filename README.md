@@ -274,12 +274,16 @@ supported through October 2030) - pinned in the Docker image, CI, and
   was not carried over); `sixdof.guidance.minimum_energy_gamma()` reports
   the classical optimal burnout angle for a given target range as a
   reference number, but guidance does not automatically fly to hit it.
-- **Historical preset data**: ported from the original `presets.txt`.
-  Its thrust figures are in kgf (kilogram-force), matching the original
-  GUI's `*9.81` conversion - see the comments in `sixdof/presets.py` for two
-  entries (Scud-B, Al-Husayn) whose sourced thrust was, even after that
-  correction, below the vehicle's own liftoff weight, and were bumped to a
-  flyable value close to commonly cited real-world figures.
+- **Historical preset data**: copied verbatim from the original
+  `legacy_2005_planar_tool/presets.txt` - stage masses, Isp, thrust and
+  diameters are used exactly as sourced, with no modification. The sheet's
+  thrust is in kgf (kilogram-force) and is converted to Newtons with the
+  same `*9.81` the original GUI used; the single Isp the sheet lists per
+  stage is used at all altitudes. The only per-stage values not in the
+  sheet - length (for the rotational-inertia estimate) and the aerodynamic
+  coefficients - are documented engineering estimates that the 2D original
+  never needed, and do not alter the ballistic data. See the comments in
+  `sixdof/presets.py`.
 - **Presets are illustrative**, not intelligence-grade specifications.
 
 ## Extending it

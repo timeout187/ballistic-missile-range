@@ -1,35 +1,55 @@
 """
-Preset vehicle definitions, ported from the original project's `presets.txt`
-(payload / stage mass / Isp / thrust figures as compiled by Josh Levinger for
-GlobalSecurity.org, 2005, from open-source references). Aerodynamic
-coefficients, inertia geometry and control-torque authority were not part of
-the original planar model (which only needed drag) and have been added here
-as reasonable engineering-level estimates so the 6DOF model has something
-sensible to fly; they are editable in the GUI's Advanced panel.
+Preset vehicle definitions, copied verbatim from the original project's
+`legacy_2005_planar_tool/presets.txt` (payload / stage mass / Isp / thrust /
+diameter figures as compiled by Josh Levinger for GlobalSecurity.org, 2005,
+from open-source references).
+
+The ballistic numbers below are NOT modified from the source sheet:
+
+  * propellant_mass   <- fuelmass[i]
+  * dry_mass          <- drymass[i]
+  * isp_sea = isp_vac <- Isp0[i]   (the sheet gives a single Isp per stage;
+                                     it is used at all altitudes, unchanged)
+  * thrust_vac        <- thrust0[i] * 9.81   (the sheet's thrust is in kgf
+                                     (kilogram-force); the original GUI
+                                     converted to Newtons with * 9.81 before
+                                     use, and so do we)
+  * diameter          <- missilediam
+  * payload_mass      <- payload
+  * payload_diameter  <- rvdiam if the sheet gives one, else missilediam
+
+The only values NOT present in the source sheet are per-stage LENGTH and the
+aerodynamic coefficients. The original tool was a 2D point-mass model and
+never needed them; the 6DOF model does (length feeds the rotational-inertia
+estimate, the aero coefficients feed the attitude dynamics). Those are
+documented engineering estimates, editable in the GUI's Advanced panel - they
+do not alter the ballistic data above.
 """
 
 from __future__ import annotations
 
+import math
+
 from .vehicle import Stage, StageAero, Vehicle
 
-# The original presets.txt stores thrust in kgf (kilogram-force) - the
-# original GUI converted with `thrust_N = thrust_kgf * 9.81` before use
-# (see the historical gui.py / sim.py, e.g. "Thrust (kg f)" input and the
-# `*9.81 #convert from kgf to N` comment). The figures ported below from
-# presets.txt are converted the same way so liftoff thrust-to-weight ratios
-# come out physically sensible.
+# The sheet's thrust is in kgf (kilogram-force); 1 kgf = 9.81 N. The original
+# gui.py converted with `* 9.81 #convert from kgf to N` before use.
 KGF_TO_N = 9.81
 
 
-def _stage(name, dry_mass, prop_mass, isp_sea, isp_vac, thrust_vac, diameter, length, **aero_kwargs):
-    aero = StageAero(ref_area=3.14159265 * (diameter / 2) ** 2, ref_length=diameter, **aero_kwargs)
+def _stage(name, drymass, fuelmass, isp0, thrust0_kgf, diameter, length):
+    """Build a Stage from the sheet's per-stage fields. drymass, fuelmass,
+    isp0 and thrust0_kgf are taken exactly from presets.txt; a single Isp is
+    used for both sea level and vacuum (the sheet only lists one). length is a
+    geometry estimate the 2D sheet did not carry (see module docstring)."""
+    aero = StageAero(ref_area=math.pi * (diameter / 2) ** 2, ref_length=diameter)
     return Stage(
         name=name,
-        dry_mass=dry_mass,
-        propellant_mass=prop_mass,
-        isp_sea=isp_sea,
-        isp_vac=isp_vac,
-        thrust_vac=thrust_vac,
+        dry_mass=drymass,
+        propellant_mass=fuelmass,
+        isp_sea=isp0,
+        isp_vac=isp0,
+        thrust_vac=thrust0_kgf * KGF_TO_N,
         diameter=diameter,
         length=length,
         aero=aero,
@@ -39,83 +59,84 @@ def _stage(name, dry_mass, prop_mass, isp_sea, isp_vac, thrust_vac, diameter, le
 def build_presets() -> "dict[str, Vehicle]":
     presets = {}
 
+    # 'Germany - V2': payload 975, missilediam 1.65, rvdiam 1.65,
+    #   fuelmass [0,8900], drymass [0,4000], Isp0 [0,210], thrust0 [0,27461]
     presets["Germany - V2"] = Vehicle(
         name="Germany - V2",
         payload_mass=975,
         payload_diameter=1.65,
-        stages=[_stage("Stage 1", 4000, 8900, 210 * 0.85, 210, 27461 * KGF_TO_N, 1.65, 14.0)],
+        stages=[_stage("Stage 1", 4000, 8900, 210, 27461, 1.65, 14.0)],
     )
 
-    # NOTE: presets.txt's original Scud-B (8300 kgf) and Al-Husayn (9177.4 kgf)
-    # thrust figures yield a sea-level thrust-to-weight ratio at/below 1.0 once
-    # the (correct) kgf->N conversion is applied - i.e. as sourced, the vehicle
-    # cannot lift off. These two are bumped to ~13,300 kgf / ~11,200 kgf
-    # (closer to the commonly cited real-world Scud-B engine rating) so the
-    # preset is flyable; everything else about the entry is as sourced.
+    # 'Russia - Scud-B': payload 1000, missilediam .855, rvdiam 0,
+    #   fuelmass [0,5200], drymass [0,1150], Isp0 [0,226], thrust0 [0,8300]
     presets["Russia - Scud-B"] = Vehicle(
         name="Russia - Scud-B",
         payload_mass=1000,
         payload_diameter=0.855,
-        stages=[_stage("Stage 1", 1150, 5200, 226 * 0.85, 226, 13300 * KGF_TO_N, 0.855, 11.25)],
+        stages=[_stage("Stage 1", 1150, 5200, 226, 8300, 0.855, 11.25)],
     )
 
+    # 'Iraq - Al-Husayn': payload 500, missilediam 0.88, rvdiam 0,
+    #   fuelmass [0,5600], drymass [0,1200], Isp0 [0,226], thrust0 [0,9177.4]
     presets["Iraq - Al-Husayn"] = Vehicle(
         name="Iraq - Al-Husayn",
         payload_mass=500,
         payload_diameter=0.88,
-        stages=[_stage("Stage 1", 1200, 5600, 226 * 0.85, 226, 11200 * KGF_TO_N, 0.88, 12.9)],
+        stages=[_stage("Stage 1", 1200, 5600, 226, 9177.4, 0.88, 12.9)],
     )
 
+    # 'DPRK - Nodong-A': payload 1000, missilediam 1.35, rvdiam 0,
+    #   fuelmass [0,12798], drymass [0,2294], Isp0 [0,226], thrust0 [0,26600]
     presets["DPRK - Nodong-A"] = Vehicle(
         name="DPRK - Nodong-A",
         payload_mass=1000,
         payload_diameter=1.35,
-        stages=[_stage("Stage 1", 2294, 12798, 226 * 0.85, 226, 26600 * KGF_TO_N, 1.35, 15.5)],
+        stages=[_stage("Stage 1", 2294, 12798, 226, 26600, 1.35, 15.5)],
     )
 
+    # 'DPRK - Nodong-A1': payload 650, missilediam 1.35, rvdiam 0,
+    #   fuelmass [0,14950], drymass [0,2371], Isp0 [0,226], thrust0 [0,31260]
     presets["DPRK - Nodong-A1"] = Vehicle(
         name="DPRK - Nodong-A1",
         payload_mass=650,
         payload_diameter=1.35,
-        stages=[_stage("Stage 1", 2371, 14950, 226 * 0.85, 226, 31260 * KGF_TO_N, 1.35, 16.0)],
+        stages=[_stage("Stage 1", 2371, 14950, 226, 31260, 1.35, 16.0)],
     )
 
+    # 'DPRK - Nodong-B': payload 1000, missilediam 1.5, rvdiam 0,
+    #   fuelmass [0,17858], drymass [0,2146], Isp0 [0,269], thrust0 [0,26580]
     presets["DPRK - Nodong-B"] = Vehicle(
         name="DPRK - Nodong-B",
         payload_mass=1000,
         payload_diameter=1.5,
-        stages=[_stage("Stage 1", 2146, 17858, 269 * 0.85, 269, 26580 * KGF_TO_N, 1.5, 16.5)],
+        stages=[_stage("Stage 1", 2146, 17858, 269, 26580, 1.5, 16.5)],
     )
 
-    presets["DPRK - Taepodong-1 (3-stage)"] = Vehicle(
-        name="DPRK - Taepodong-1 (3-stage)",
+    # 'DPRK - TD-1': payload 1000, missilediam 1.5, rvdiam 0, numstages 3,
+    #   fuelmass [0,12798,3771,196.66], drymass [0,2394,1100,23],
+    #   Isp0 [0,226,268,280], thrust0 [0,30432,6000,2039.43]
+    presets["DPRK - TD-1"] = Vehicle(
+        name="DPRK - TD-1",
         payload_mass=1000,
         payload_diameter=1.5,
         stages=[
-            _stage("Stage 1", 2394, 12798, 226 * 0.85, 226, 30432 * KGF_TO_N, 1.5, 16.0),
-            _stage("Stage 2", 1100, 3771, 268 * 0.9, 268, 6000 * KGF_TO_N, 1.35, 9.0),
-            _stage("Stage 3", 23, 196.66, 280 * 0.95, 280, 2039.43 * KGF_TO_N, 0.8, 3.0),
+            _stage("Stage 1", 2394, 12798, 226, 30432, 1.5, 16.0),
+            _stage("Stage 2", 1100, 3771, 268, 6000, 1.5, 9.0),
+            _stage("Stage 3", 23, 196.66, 280, 2039.43, 1.5, 3.0),
         ],
     )
 
-    presets["DPRK - Taepodong-2 (2-stage)"] = Vehicle(
-        name="DPRK - Taepodong-2 (2-stage)",
+    # 'DPRK - TD-2': payload 1158, missilediam 2.0, rvdiam 0, numstages 2,
+    #   fuelmass [0,52124,12798], drymass [0,3532,2294],
+    #   Isp0 [0,230,264], thrust0 [0,104257,31200]
+    presets["DPRK - TD-2"] = Vehicle(
+        name="DPRK - TD-2",
         payload_mass=1158,
         payload_diameter=2.0,
         stages=[
-            _stage("Stage 1", 3532, 52124, 230 * 0.85, 230, 104257 * KGF_TO_N, 2.0, 22.0),
-            _stage("Stage 2", 2294, 12798, 264 * 0.9, 264, 31200 * KGF_TO_N, 1.5, 12.0),
-        ],
-    )
-
-    presets["Generic 3-Stage ICBM"] = Vehicle(
-        name="Generic 3-Stage ICBM",
-        payload_mass=800,
-        payload_diameter=1.8,
-        stages=[
-            _stage("Stage 1", 4200, 42000, 262 * 0.85, 262, 1050000, 1.8, 12.0, cm_alpha=-0.5),
-            _stage("Stage 2", 1500, 14500, 289 * 0.9, 289, 270000, 1.5, 7.0, cm_alpha=-0.5),
-            _stage("Stage 3", 500, 4200, 300 * 0.95, 300, 78000, 1.2, 3.5, cm_alpha=-0.5),
+            _stage("Stage 1", 3532, 52124, 230, 104257, 2.0, 22.0),
+            _stage("Stage 2", 2294, 12798, 264, 31200, 2.0, 12.0),
         ],
     )
 
