@@ -207,6 +207,16 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
+Or with Docker, no Python setup at all - a prebuilt image is published to
+GitHub Container Registry on every release:
+
+```bash
+docker run -p 8501:8501 ghcr.io/timeout187/ballistic-missile-range:latest
+```
+
+Then open `http://localhost:8501`. (First pull downloads the image; after
+that, `docker run` is instant.)
+
 Opens a browser tab with:
 
 - **Sidebar** - pick a preset vehicle (or edit every stage's mass, Isp,

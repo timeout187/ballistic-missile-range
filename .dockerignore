@@ -1,0 +1,8 @@
+.git
+.github
+docs
+legacy_2005_planar_tool
+*.md
+__pycache__
+*.pyc
+.streamlit
