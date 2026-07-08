@@ -188,11 +188,11 @@ sixdof/            physics engine (no GUI dependency)
   atmosphere.py        1976 U.S. Standard Atmosphere
   quaternion.py         attitude math
   vehicle.py             Stage / StageAero / Vehicle dataclasses
-  presets.py               ported + corrected historical missile presets
+  presets.py               copied verbatim from the original presets.txt
   guidance.py                open-loop pitch program / attitude targeting
   dynamics.py                   forces, moments, the 14-state derivative
-  integrator.py                  fixed-step RK4
-  simulation.py                    orchestrates staging, boost, coast, re-entry
+  simulation.py                    per-phase adaptive integration (scipy
+                                    solve_ivp), staging, boost, coast, re-entry
 
 analysis/           post-processing (no GUI dependency)
   metrics.py           apogee, max-Q, max Mach, max load, impact point, stability

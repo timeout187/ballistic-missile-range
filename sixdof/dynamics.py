@@ -99,10 +99,20 @@ def aero_forces_moments(env: Environment, aero, omega_body: np.ndarray):
     drag_mag = env.q_dynamic * aero.ref_area * cd
     drag_force = -drag_mag * v_hat
 
-    # normal force acts perpendicular to the body x-axis, in the plane
-    # containing the body x-axis and the relative velocity vector
+    # Normal (lift) force must be perpendicular to the RELATIVE WIND, not to
+    # the body axis -- a real aerodynamic normal force does zero work on the
+    # vehicle (F . v_rel = 0) because it is defined perpendicular to the
+    # flow; only drag (anti-parallel to the flow) may remove kinetic energy.
+    # The standard construction (e.g. Zipfel, "Modeling and Simulation of
+    # Aerospace Vehicle Dynamics") is the component of the body x-axis
+    # perpendicular to the relative wind -- NOT the component of the
+    # relative wind perpendicular to the body x-axis, which is a different,
+    # non-perpendicular-to-flow vector that has a spurious component ALONG
+    # the flow and so silently injects energy into the vehicle every step
+    # once alpha moves away from 0/90/180 degrees (exactly what an
+    # uncontrolled tumbling re-entry does), causing runaway divergence.
     x_axis = np.array([1.0, 0.0, 0.0])
-    normal_dir = v_hat - np.dot(v_hat, x_axis) * x_axis
+    normal_dir = x_axis - np.dot(x_axis, v_hat) * v_hat
     n_norm = np.linalg.norm(normal_dir)
     if n_norm > 1e-9:
         normal_dir = normal_dir / n_norm
