@@ -291,3 +291,19 @@ supported through October 2030) - pinned in the Docker image, CI, and
 - The physics core (`sixdof/`, `analysis/`) has no GUI dependency, so it is
   directly usable from a notebook or a batch script for parameter sweeps -
   see the docstrings in `sixdof/simulation.py`.
+
+## Credits
+
+- **Josh Levinger** - wrote the original 2005 planar range/altitude tool
+  for GlobalSecurity.org.
+- **Dr. David Wright (MIT)** - the underlying trajectory physics are based
+  on his 1992 BASIC model, published in "Depressed Trajectory SLBMs,"
+  *Science and Global Security*, Vol 3, p101-159.
+- **Karsten Wolf** ([@karstenw](https://github.com/karstenw)) - GUI and
+  packaging updates to the original tool.
+- **Hasan Ahmed** - six-degrees-of-freedom rigid-body rewrite: the
+  `sixdof/` physics engine, `analysis/` module, Streamlit GUI, animated
+  SVG flight report, and everything else added since the fork.
+
+See [`LICENSE`](LICENSE) for the full copyright notice (MIT, covering
+both the original 2013 copyright and the 2026 rewrite).
