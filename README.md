@@ -1,5 +1,11 @@
 # 6DOF Ballistic Missile Range
 
+[![Tests](https://github.com/timeout187/ballistic-missile-range/actions/workflows/tests.yml/badge.svg)](https://github.com/timeout187/ballistic-missile-range/actions/workflows/tests.yml)
+[![Docker](https://github.com/timeout187/ballistic-missile-range/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/timeout187/ballistic-missile-range/actions/workflows/docker-publish.yml)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Live app](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://sixdof-missile-range.streamlit.app/)
+
 A six-degree-of-freedom (6DOF) rigid-body flight-dynamics simulator for
 ballistic missile / sounding-rocket-class trajectories, with a Streamlit
 GUI, an analysis module, and hand-built animated SVG output graphs.
@@ -15,6 +21,20 @@ the same guide plus deeper how-tos, and a static
 [flight-report demo](https://timeout187.github.io/ballistic-missile-range/)
 hosted on GitHub Pages if you just want to see it animate without running
 anything.
+
+---
+
+## Table of contents
+
+1. [Quick Start (zero experience needed)](#quick-start-zero-experience-needed)
+2. [What "6DOF" adds over the original](#what-6dof-adds-over-the-original)
+3. [Equations of motion](docs/equations.md)
+4. [Project layout](#project-layout)
+5. [Running it](#running-it)
+6. [Testing](#testing)
+7. [Physics & modeling notes / scope](#physics--modeling-notes--scope)
+8. [Extending it](#extending-it)
+9. [Credits](#credits)
 
 ---
 
@@ -178,7 +198,10 @@ the old planar model could not represent it at all.
 
 See [`sixdof/dynamics.py`](sixdof/dynamics.py) and
 [`sixdof/guidance.py`](sixdof/guidance.py) for the full equations and the
-guidance-law design notes.
+guidance-law design notes, or [docs/equations.md](docs/equations.md) for
+a single mathematical reference page (state vector, translational/
+rotational dynamics, aerodynamic force/moment build-up, attitude
+control law) with links straight to the implementing code.
 
 ## Project layout
 
@@ -200,6 +223,11 @@ analysis/           post-processing (no GUI dependency)
   svg_report.py           hand-built animated SVG + vanilla-JS report generator
 
 app.py              Streamlit GUI (sidebar inputs, tabs, downloads)
+tests/              pytest suite: atmosphere, quaternion math, guidance,
+                    vehicle/presets, and full end-to-end flights for
+                    every preset vehicle
+examples/           headless scripts using the physics core directly,
+                    no GUI/Streamlit required
 requirements.txt
 legacy_2005_planar_tool/   the original 2005 planar tool, kept for reference
 ```
@@ -247,6 +275,44 @@ Targets **Python 3.14** (the current latest stable release, security-
 supported through October 2030) - pinned in the Docker image, CI, and
 `runtime.txt` (read by Streamlit Community Cloud). Should also run on any
 3.10+ interpreter if you're installing manually.
+
+### Command line / Python API
+
+The physics core (`sixdof/`, `analysis/`) has no GUI dependency, so it's
+directly usable from a script or notebook:
+
+```bash
+python examples/run_nominal_flight.py "Russia - Scud-B"
+python examples/preset_sweep.py   # every preset, one comparison table
+```
+
+```python
+from sixdof.presets import PRESETS
+from sixdof.guidance import GuidanceProgram
+from sixdof.simulation import Simulation
+from analysis.metrics import compute_metrics
+
+vehicle = PRESETS["Russia - Scud-B"]
+guidance = GuidanceProgram(launch_azimuth_deg=90, trajectory_type="gravity_turn")
+sim = Simulation(vehicle, guidance, launch_lat_deg=35.0, launch_lon_deg=45.0, t_max=3600)
+result = sim.run()
+metrics = compute_metrics(result, vehicle)
+print(f"apogee: {metrics.apogee_km:.1f} km, range: {metrics.total_range_km:.1f} km")
+```
+
+## Testing
+
+```bash
+pip install -r requirements.txt
+python -m pytest tests/ -q
+```
+
+The suite covers the 1976 Standard Atmosphere model, quaternion attitude
+math, the guidance/pitch-program logic, vehicle/preset construction, and
+full end-to-end 6DOF flights for every preset vehicle - each checked
+against sane physical bounds (impact reached, apogee/range/Mach/axial-load
+within headroom of the source sheet's own historical figures; see
+`tests/test_simulation.py`). Runs in CI on every push/PR (badge above).
 
 ## Physics & modeling notes / scope
 

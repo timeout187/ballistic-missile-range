@@ -40,9 +40,12 @@ class StageAero:
             t = (mach - 0.8) / 0.4
             shape = math.sin(math.pi * t)
             return self.cd0_subsonic + (self.cd0_transonic - self.cd0_subsonic) * shape
-        # supersonic decay back toward cd0_supersonic
+        # supersonic decay back toward cd0_supersonic. The transonic branch
+        # above returns to cd0_subsonic at Mach 1.2 (sin(pi*1) == 0), so the
+        # decay must start from cd0_subsonic too, not cd0_transonic, or cd0
+        # jumps discontinuously across the 1.2 boundary.
         decay = math.exp(-(mach - 1.2) / 3.0)
-        return self.cd0_supersonic + (self.cd0_transonic - self.cd0_supersonic) * decay
+        return self.cd0_supersonic + (self.cd0_subsonic - self.cd0_supersonic) * decay
 
 
 @dataclass

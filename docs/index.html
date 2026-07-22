@@ -1,4 +1,4 @@
-<title>6DOF Ballistic Missile Range &mdash; Build Complete</title>
+<title>6DOF Ballistic Missile Range &mdash; Live Flight Demo</title>
 <style>
   :root {
     --bg: #060a13;
@@ -195,7 +195,7 @@
       <p class="subtitle">Six-degree-of-freedom rigid-body trajectory simulator, GUI, analysis module and animated telemetry report &mdash; rebuilt from an archived 2005 planar range/altitude tool.</p>
     </div>
     <div class="topbar-right">
-      <span class="chip chip-good">BUILD COMPLETE</span>
+      <span class="chip chip-good">LIVE</span>
       <a class="repo-link repo-link-primary" href="https://sixdof-missile-range.streamlit.app/" target="_blank" rel="noopener">
         Launch the live app <span class="arrow">&rarr;</span>
       </a>
@@ -204,6 +204,9 @@
       </a>
       <a class="repo-link" href="https://github.com/timeout187/ballistic-missile-range/wiki" target="_blank" rel="noopener">
         Wiki &amp; Quick Start <span class="arrow">&rarr;</span>
+      </a>
+      <a class="repo-link" href="https://github.com/timeout187/ballistic-missile-range/blob/master/docs/equations.md" target="_blank" rel="noopener">
+        Equations of motion <span class="arrow">&rarr;</span>
       </a>
     </div>
   </header>
@@ -483,41 +486,42 @@
 
   <section class="grid-2">
     <div class="panel">
-      <div class="panel-head"><span class="panel-eyebrow">Build manifest</span></div>
+      <div class="panel-head"><span class="panel-eyebrow">What this simulates</span></div>
       <ul class="manifest">
         <li>
-          <span class="chip chip-good">DONE</span>
           <div>
             <div class="manifest-title">6DOF physics core</div>
             <div class="manifest-desc">Quaternion attitude, rigid-body rotational dynamics, point-mass ECI gravity, 1976 Standard Atmosphere, Mach/&alpha;-dependent aero valid across the full 0&ndash;180&deg; angle-of-attack range.</div>
           </div>
         </li>
         <li>
-          <span class="chip chip-good">DONE</span>
           <div>
             <div class="manifest-title">Guidance &amp; control</div>
             <div class="manifest-desc">Gravity-turn / lofted / depressed pitch programs, torque-saturated attitude controller, multi-stage boost with staging, uncontrolled ballistic re-entry.</div>
           </div>
         </li>
         <li>
-          <span class="chip chip-good">DONE</span>
           <div>
             <div class="manifest-title">Analysis module</div>
             <div class="manifest-desc">Apogee, burnout, max-Q, max Mach, max axial load, impact point, static-stability read-out, CSV/JSON export.</div>
           </div>
         </li>
         <li>
-          <span class="chip chip-good">DONE</span>
           <div>
             <div class="manifest-title">Animated SVG report</div>
             <div class="manifest-desc">The panel above &mdash; flight profile, ground track, and five synced telemetry channels with a scrub/play transport.</div>
           </div>
         </li>
         <li>
-          <span class="chip chip-good">DONE</span>
           <div>
             <div class="manifest-title">Streamlit GUI</div>
             <div class="manifest-desc">Preset and per-stage vehicle editor, launch/guidance parameters, 3D WebGL trajectory view, data export &mdash; runs locally, see below.</div>
+          </div>
+        </li>
+        <li>
+          <div>
+            <div class="manifest-title">Test suite</div>
+            <div class="manifest-desc">Pytest coverage of the atmosphere, quaternion math, guidance logic, and full end-to-end flights for every preset vehicle &mdash; see <a href="https://github.com/timeout187/ballistic-missile-range/tree/master/tests" target="_blank" rel="noopener">tests/</a>.</div>
           </div>
         </li>
       </ul>
