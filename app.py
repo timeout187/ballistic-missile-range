@@ -45,6 +45,65 @@ st.caption(
     "boost, ballistic re-entry). Successor to the original 2005 planar range/altitude tool."
 )
 
+with st.expander("📐 Equations of motion", expanded=False):
+    st.markdown(
+        "The physics this simulator integrates, before you configure a vehicle and run it. "
+        "Full derivations and code references: "
+        "[docs/equations.md](https://github.com/timeout187/ballistic-missile-range/blob/master/docs/equations.md)."
+    )
+
+    st.markdown("**State vector** (14 elements, integrated in the Earth-Centered Inertial frame)")
+    st.latex(r"""
+    \mathbf{x} = \begin{bmatrix} \mathbf{r} & \mathbf{v} & \mathbf{q} & \boldsymbol{\omega} & m \end{bmatrix}
+    \quad\text{(position, velocity, attitude quaternion, body rate, mass)}
+    """)
+
+    st.markdown("**Translational dynamics** - point-mass gravity, thrust + aerodynamic force:")
+    st.latex(r"""
+    \dot{\mathbf{v}} = \frac{\mathbf{F}_{thrust} + \mathbf{F}_{aero}}{m} \;-\; \frac{\mu \,\mathbf{r}}{|\mathbf{r}|^3}
+    """)
+
+    st.markdown("**Rotational dynamics** - Euler's equations for an axisymmetric body ($I_{yy}=I_{zz}$):")
+    st.latex(r"""
+    \dot{\boldsymbol{\omega}} = I^{-1}\Big(\mathbf{M}_{total} - \boldsymbol{\omega}\times(I\,\boldsymbol{\omega})\Big),
+    \qquad I = \mathrm{diag}(I_{xx},\,I_{yy},\,I_{zz})
+    """)
+
+    st.markdown("**Attitude kinematics** - quaternion derivative from body-frame angular rate:")
+    st.latex(r"""
+    \dot{\mathbf{q}} = \tfrac{1}{2}\, \mathbf{q} \otimes \begin{bmatrix} 0 \\ \boldsymbol{\omega} \end{bmatrix}
+    """)
+
+    st.markdown(
+        "**Aerodynamics** - dynamic pressure $q_{dyn}=\\tfrac{1}{2}\\rho|\\mathbf{v}_{rel}|^2$, "
+        "reference area $A$, reference length $d$, total angle of attack $\\alpha$ "
+        "(built from $\\sin\\alpha$, not $\\alpha$ itself, so the model stays bounded through a full "
+        "0-180&deg; tumble once guidance authority is withdrawn at burnout):"
+    )
+    st.latex(r"""
+    \begin{aligned}
+    C_D &= C_{D0}(M) + k_\alpha \sin^2\alpha \\
+    C_N &= C_{L\alpha} \sin\alpha \\[4pt]
+    \text{Drag} &= q_{dyn}\,A\,C_D \quad\text{(anti-parallel to } \mathbf{v}_{rel}\text{)}\\
+    \text{Normal force} &= q_{dyn}\,A\,C_N \quad\text{(perpendicular to } \mathbf{v}_{rel}\text{)}\\[4pt]
+    C_m &= C_{m0} + C_{m\alpha}\sin\alpha \\
+    M_{restoring} &= q_{dyn}\,A\,d\,C_m \\
+    M_{damping} &= -C_{mq}\,\dfrac{q_{dyn}\,A\,d^2}{2|\mathbf{v}_{rel}|}\,\boldsymbol{\omega}_{pitch/yaw}
+    \end{aligned}
+    """)
+
+    st.markdown("**Attitude control** (guidance-active phases only) - critically-damped quaternion-feedback PD, saturated to the stage's control authority:")
+    st.latex(r"""
+    \boldsymbol{\tau} = \mathrm{sat}\Big(k_p\,\mathbf{e}_{body} - k_d\,\boldsymbol{\omega},\ \pm\,\tau_{max}\Big),
+    \qquad k_p = I_{yy}\omega_n^2,\ \ k_d = 2\zeta I_{yy}\omega_n
+    """)
+
+    st.caption(
+        "Atmosphere: 1976 U.S. Standard Atmosphere, piecewise through 86 km. Gravity: point-mass "
+        "(no J2 oblateness term). See the Analysis Summary tab's 'Notes on this model's scope' "
+        "after running a simulation for the full list of assumptions and limitations."
+    )
+
 # ---------------------------------------------------------------- sidebar --
 with st.sidebar:
     st.header("Vehicle")
